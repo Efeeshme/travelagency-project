@@ -1,0 +1,641 @@
+{# core/templates/core/mainlanding.html #}
+{% load static %}
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Butterfly Travel — Sizin Səyahət Tərəfdaşınız</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet"/>
+  <style>
+    /* ── SHARED TOKENS (identical to landing.html) ── */
+    :root {
+      --blue:    #00AEEF;
+      --blue-dk: #0090C8;
+      --yellow:  #F5A623;
+      --red:     #E8453C;
+      --green:   #7AB648;
+      --ink:    #1C2B3A;
+      --ink2:   #3D5166;
+      --muted:  #7A90A4;
+      --line:   #E4ECF2;
+      --bg:     #F5F7FA;
+      --card:   #FFFFFF;
+      --r:    12px;
+      --r-lg: 18px;
+      --shadow-sm: 0 2px 8px rgba(0,0,0,.07);
+      --shadow-md: 0 8px 32px rgba(0,0,0,.10);
+      --shadow-lg: 0 20px 56px rgba(0,0,0,.13);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; overflow-x: hidden; }
+
+    /* ── NAVBAR (same as landing) ── */
+    .nav { position: sticky; top: 0; z-index: 200; height: 62px; background: rgba(255,255,255,.96); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); box-shadow: var(--shadow-sm); display: flex; align-items: center; justify-content: space-between; padding: 0 40px; }
+    .nav-logo { display: flex; align-items: center; text-decoration: none; }
+    .nav-logo img { height: 36px; width: 36px; object-fit: cover; border-radius: 50%; display: block; box-shadow: 0 2px 10px rgba(0,0,0,.12); }
+    .nav-right { display: flex; align-items: center; gap: 6px; }
+    .nav-a { padding: 7px 13px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--muted); text-decoration: none; transition: color .2s, background .2s; }
+    .nav-a:hover { color: var(--ink); background: var(--bg); }
+    .nav-cta { display: inline-flex; align-items: center; gap: 7px; background: var(--ink); color: #fff; padding: 9px 20px; border-radius: 999px; font-size: 13px; font-weight: 700; text-decoration: none; transition: background .2s, transform .15s; box-shadow: 0 2px 10px rgba(0,0,0,.15); }
+    .nav-cta:hover { background: var(--ink2); transform: translateY(-1px); }
+
+    /* ── HERO — full-viewport, logo centered ── */
+    .hero {
+      min-height: 100vh;
+      background: #0C1F35;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center;
+      padding: 60px 20px 80px;
+      position: relative; overflow: hidden;
+    }
+    /* dot grid */
+    .hero::before {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background-image: radial-gradient(rgba(255,255,255,.04) 1px, transparent 1px);
+      background-size: 26px 26px;
+    }
+    /* colour washes — subtle, not dominant */
+    .hero::after {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 60% 55% at 8% 50%, rgba(0,174,239,.08) 0%, transparent 60%),
+        radial-gradient(ellipse 45% 50% at 92% 22%, rgba(245,166,35,.07) 0%, transparent 55%),
+        radial-gradient(ellipse 40% 45% at 50% 92%, rgba(122,182,72,.06) 0%, transparent 55%);
+    }
+    /* animated brand symbols */
+    .hero-particles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+    .p { position: absolute; opacity: .13; animation: pFloat linear infinite; }
+    .p1 { width:220px; height:220px; top:-50px; left:-70px; animation-duration:18s; }
+    .p2 { width:170px; height:170px; bottom:80px; right:-30px; animation-duration:22s; animation-delay:-8s; }
+    .p3 { width:140px; height:140px; bottom:-20px; left:28%; animation-duration:16s; animation-delay:-5s; }
+    .p4 { width:120px; height:120px; top:15%; right:12%; animation-duration:20s; animation-delay:-3s; }
+    @keyframes pFloat { 0%{transform:translateY(0) rotate(0deg)} 50%{transform:translateY(-40px) rotate(180deg)} 100%{transform:translateY(0) rotate(360deg)} }
+
+    .hero-inner { position: relative; z-index: 2; max-width: 680px; margin: 0 auto; }
+
+    /* LOGO — big, centered, animated */
+    .hero-logo-wrap {
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      background: #fff;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 36px;
+      box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 8px 40px rgba(0,174,239,.28), 0 2px 12px rgba(0,0,0,.22);
+      animation: logoFloat 4s ease-in-out infinite;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .hero-logo {
+      width: 80px; height: 80px; object-fit: contain; display: block;
+    }
+    @keyframes logoFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.13);
+      color: rgba(255,255,255,.55);
+      font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+      padding: 5px 16px; border-radius: 999px; margin-bottom: 22px;
+    }
+    .ey-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--blue); animation: blink 2s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      color: #fff;
+      line-height: 1.13; letter-spacing: -.01em;
+      margin-bottom: 20px;
+    }
+    .hero-title em { font-style: normal; color: #8FD4F5; }
+    .hero-title .y { color: #fcd476; }
+
+    .hero-sub {
+      font-size: 16px; color: rgba(255,255,255,.46);
+      line-height: 1.75; max-width: 500px; margin: 0 auto 40px;
+    }
+
+    /* CTA button group */
+    .hero-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 9px;
+      background: var(--blue); color: #fff; text-decoration: none;
+      padding: 14px 30px; border-radius: 999px;
+      font-size: 15px; font-weight: 700;
+      box-shadow: 0 4px 20px rgba(0,174,239,.38);
+      transition: background .2s, transform .15s, box-shadow .2s;
+    }
+    .btn-primary:hover { background: var(--blue-dk); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,174,239,.48); }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 9px;
+      background: rgba(255,255,255,.08); color: rgba(255,255,255,.8);
+      border: 1.5px solid rgba(255,255,255,.18);
+      text-decoration: none; padding: 13px 26px; border-radius: 999px;
+      font-size: 15px; font-weight: 600;
+      transition: background .2s, transform .15s;
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,.14); transform: translateY(-2px); }
+
+    /* scroll hint */
+    .scroll-hint {
+      position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      color: rgba(255,255,255,.25); font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+      animation: fadeHint 2s ease-in-out infinite;
+    }
+    @keyframes fadeHint { 0%,100%{opacity:.3;transform:translateX(-50%) translateY(0)} 50%{opacity:.7;transform:translateX(-50%) translateY(4px)} }
+    .scroll-arr { font-size: 16px; }
+
+    /* ── SECTION WRAPPER ── */
+    .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px; }
+
+    /* ── HOW IT WORKS ── */
+    .section { padding: 72px 0; }
+    .section-sm { padding: 48px 0; }
+    .sec-eye { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .14em; color: var(--blue-dk); margin-bottom: 8px; }
+    .sec-title { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--ink); margin-bottom: 10px; }
+    .sec-sub { font-size: 14px; color: var(--muted); line-height: 1.7; max-width: 520px; margin-bottom: 40px; }
+
+    /* steps */
+    .steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+    .step {
+      background: var(--card); border: 1.5px solid var(--line);
+      border-radius: var(--r-lg); padding: 28px 24px;
+      position: relative; overflow: hidden;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .step:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+    .step-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 52px; color: var(--line);
+      position: absolute; top: 14px; right: 18px;
+      line-height: 1; user-select: none;
+    }
+    .step-ico { font-size: 28px; margin-bottom: 14px; }
+    .step-title { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 7px; }
+    .step-body { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+    /* ── FEATURES GRID ── */
+    .feat-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; }
+    .feat {
+      background: var(--card); border: 1.5px solid var(--line);
+      border-radius: var(--r-lg); padding: 22px 22px;
+      display: flex; gap: 16px; align-items: flex-start;
+      transition: border-color .2s, transform .18s;
+    }
+    .feat:hover { border-color: #A8DAF0; transform: translateY(-2px); }
+    .feat-ico {
+      width: 44px; height: 44px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+    }
+    .ico-b { background: #EBF6FD; }
+    .ico-y { background: #FEF7E8; }
+    .ico-r { background: #FDECEA; }
+    .ico-g { background: #EDF7E4; }
+    .feat-title { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 5px; }
+    .feat-body { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+    /* ── STATS BAND ── */
+    .stats-band {
+      background: #0C1F35; border-radius: var(--r-lg);
+      padding: 40px 48px;
+      display: grid; grid-template-columns: repeat(4,1fr); gap: 24px;
+      position: relative; overflow: hidden;
+    }
+    .stats-band::before {
+      content: ''; position: absolute; inset: 0;
+      background-image: radial-gradient(rgba(255,255,255,.03) 1px, transparent 1px);
+      background-size: 22px 22px; pointer-events: none;
+    }
+    .stat { text-align: center; position: relative; z-index: 2; }
+    .stat-val { font-family: 'Playfair Display', serif; font-size: 32px; color: #fff; line-height: 1; }
+    .stat-val span { color: var(--blue); }
+    .stat-lbl { font-size: 12px; color: rgba(255,255,255,.4); font-weight: 500; margin-top: 6px; }
+
+    /* ── DESTINATIONS PREVIEW ── */
+    .dest-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 13px; }
+    .dc { background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-lg); overflow: hidden; transition: transform .2s, box-shadow .2s, border-color .2s; display: flex; flex-direction: column; }
+    .dc:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: #A8DAF0; }
+    .dc-img { height: 140px; flex-shrink: 0; background: linear-gradient(135deg,#0A1E35,#0D3358); position: relative; overflow: hidden; }
+    .dc-img img { width:100%; height:100%; object-fit:cover; opacity:.78; transition:transform .45s; display:block; }
+    .dc:hover .dc-img img { transform: scale(1.06); }
+    .dc-ov { position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,.42) 0%,transparent 55%); }
+    .dc-badge { position:absolute; top:9px; right:9px; background:rgba(0,0,0,.3); backdrop-filter:blur(6px); color:#fff; font-size:10px; font-weight:700; letter-spacing:.08em; padding:3px 8px; border-radius:999px; border:1px solid rgba(255,255,255,.15); }
+    .dc-body { padding: 12px 14px 14px; flex: 1; display: flex; flex-direction: column; }
+    .dc-from { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--blue-dk); margin-bottom: 2px; }
+    .dc-city { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .dc-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; }
+    .dc-price { display: flex; align-items: baseline; gap: 2px; min-width: 0; overflow: hidden; }
+    .dc-pf { font-size: 10px; color: var(--muted); white-space: nowrap; flex-shrink: 0; }
+    .dc-pv { font-size: 16px; font-weight: 700; color: var(--ink); line-height: 1; flex-shrink: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .dc-pc { font-size: 10px; color: var(--muted); white-space: nowrap; flex-shrink: 0; }
+    .dc-btn { flex-shrink: 0; background: var(--ink); color: #fff; border: none; padding: 7px 12px; border-radius: 8px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; transition: background .2s; text-decoration: none; display: inline-block; }
+    .dc-btn:hover { background: var(--ink2); }
+
+    /* ── OFFICE / CONTACT ── */
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+    .cc { background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-lg); padding: 24px; }
+    .cc-title { font-size: 15px; font-weight: 700; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
+    .cc-ico { width: 30px; height: 30px; border-radius: 9px; background: #EBF6FD; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+    .ir { display: flex; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--line); align-items: flex-start; }
+    .ir:last-of-type { border-bottom: none; }
+    .ir-l { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); min-width: 72px; padding-top: 1px; flex-shrink: 0; }
+    .ir-v { font-size: 13px; font-weight: 500; color: var(--ink2); line-height: 1.5; }
+    .wa-btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: #25D366; color: #fff; text-decoration: none; padding: 11px 20px; border-radius: var(--r); font-weight: 700; font-size: 13px; margin-top: 18px; box-shadow: 0 2px 10px rgba(37,211,102,.22); transition: opacity .2s, transform .15s; }
+    .wa-btn:hover { opacity: .9; transform: translateY(-1px); }
+    .map-cc { background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-lg); overflow: hidden; min-height: 320px; display: flex; flex-direction: column; }
+    .map-cc iframe { width: 100%; height: 100%; min-height: 320px; border: none; display: block; flex: 1; }
+    .map-empty { flex: 1; min-height: 300px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center; padding: 24px; background: linear-gradient(135deg,#EBF4FD,#F0F8FF); color: var(--muted); }
+    .map-empty-ico { font-size: 34px; }
+    .map-empty p { font-size: 12px; font-weight: 500; line-height: 1.6; }
+
+    /* ── FINAL CTA BAND ── */
+    .cta-band {
+      background: linear-gradient(135deg, #0C1F35 0%, #0E2E52 100%);
+      border-radius: var(--r-lg);
+      padding: 56px 40px; text-align: center;
+      position: relative; overflow: hidden;
+      margin-bottom: 72px;
+    }
+    .cta-band::before {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background-image: radial-gradient(rgba(255,255,255,.04) 1px, transparent 1px);
+      background-size: 22px 22px;
+    }
+    .cta-band-inner { position: relative; z-index: 2; }
+    .cta-logo-wrap {
+      width: 90px; height: 90px; border-radius: 50%;
+      background: #fff;
+      border: none;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 24px;
+      animation: logoFloat 4s ease-in-out infinite;
+      overflow: hidden;
+      box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 8px 40px rgba(0,174,239,.28), 0 2px 12px rgba(0,0,0,.22);
+    }
+    .cta-logo { width: 60px; height: 60px; object-fit: contain; display: block; }
+    .cta-title { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 3.5vw, 2.6rem); color: #fff; margin-bottom: 14px; }
+    .cta-title em { font-style: normal; color: #8FD4F5; }
+    .cta-sub { font-size: 14px; color: rgba(255,255,255,.45); line-height: 1.7; max-width: 420px; margin: 0 auto 32px; }
+    .cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+    /* ── FOOTER ── */
+    .footer { background: #0C1F35; padding: 34px 40px 20px; }
+    .footer-in { max-width: 880px; margin: 0 auto; }
+    .footer-top { margin-bottom: 22px; }
+    .footer-links { display: flex; gap: 16px; flex-wrap: wrap; }
+    .footer-links a { font-size: 12px; color: rgba(255,255,255,.38); text-decoration: none; font-weight: 500; transition: color .2s; }
+    .footer-links a:hover { color: rgba(255,255,255,.75); }
+    .footer-bot { border-top: 1px solid rgba(255,255,255,.08); padding-top: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+    .footer-copy { font-size: 11px; color: rgba(255,255,255,.26); }
+    .footer-dots { display: flex; gap: 5px; }
+    .fdot { width: 7px; height: 7px; border-radius: 50%; }
+
+    .divider { border: none; border-top: 1px solid var(--line); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 720px) {
+      .nav { padding: 0 16px; }
+      .nav-desktop { display: none; }
+      .hero { padding: 48px 16px 72px; min-height: auto; }
+      .hero-logo-wrap { width: 90px; height: 90px; }
+      .hero-logo { width: 60px; height: 60px; }
+      .steps { grid-template-columns: 1fr; }
+      .feat-grid { grid-template-columns: 1fr; }
+      .stats-band { grid-template-columns: repeat(2,1fr); padding: 28px 20px; }
+      .dest-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .contact-grid { grid-template-columns: 1fr; }
+      .cta-band { padding: 36px 20px; }
+      .footer { padding: 26px 16px 16px; }
+    }
+    @media (max-width: 460px) {
+      .dest-grid { grid-template-columns: 1fr; }
+      .stats-band { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav class="nav">
+  <a href="#" class="nav-logo"><img src="{% static 'core/logo.png' %}" alt="Butterfly Travel"/></a>
+  <div class="nav-right nav-desktop">
+    <a class="nav-a" href="#how">Necə işləyir</a>
+    <a class="nav-a" href="#destinations">Marşrutlar</a>
+    <a class="nav-a" href="#contact">Əlaqə</a>
+    <a class="nav-cta" href="{% url 'landing' %}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      Uçuş axtar
+    </a>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="hero-particles">
+    <!-- Blue symbol -->
+    <div class="p p1">
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+        <rect x="8" y="8" width="84" height="84" rx="22" ry="22" stroke="#00AEEF" stroke-width="10" fill="none"/>
+      </svg>
+    </div>
+    <!-- Yellow symbol -->
+    <div class="p p2">
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+        <rect x="8" y="8" width="84" height="84" rx="22" ry="22" stroke="#F5A623" stroke-width="10" fill="none"/>
+      </svg>
+    </div>
+    <!-- Green symbol -->
+    <div class="p p3">
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+        <rect x="8" y="8" width="84" height="84" rx="22" ry="22" stroke="#7AB648" stroke-width="10" fill="none"/>
+      </svg>
+    </div>
+    <!-- Red symbol -->
+    <div class="p p4">
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+        <rect x="8" y="8" width="84" height="84" rx="22" ry="22" stroke="#E8453C" stroke-width="10" fill="none"/>
+      </svg>
+    </div>
+  </div>
+  <div class="hero-inner">
+    <!-- LOGO centred & prominent -->
+    <div class="hero-logo-wrap">
+      <img class="hero-logo" src="{% static 'core/logo.png' %}" alt="Butterfly Travel"/>
+    </div>
+    <div class="hero-eyebrow"><div class="ey-dot"></div>Bakı · Azərbaycan · 2009</div>
+    <h1 class="hero-title">
+      Butterfly Travel ilə<br>
+      <em>səyahət etmək</em><br>
+      <span class="y">sadədir</span>
+    </h1>
+    <p class="hero-sub">
+      Marşrutu seçin, tarixi müəyyən edin — mövcud uçuşlar anında qarşınıza gəlsin.<br>
+      Ən yaxşı qiymət üçün bir kliklə WhatsApp-da bizimlə əlaqə saxlayın.
+    </p>
+    <div class="hero-btns">
+      <a class="btn-primary" href="{% url 'landing' %}">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        Uçuş axtarışına keç
+      </a>
+      <a class="btn-ghost" href="#how">Necə işləyir →</a>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <div class="scroll-arr">↓</div>
+    <div>Aşağı dayan</div>
+  </div>
+</div>
+
+<!-- ── HOW IT WORKS ── -->
+<div class="section" id="how">
+  <div class="wrap">
+    <div class="sec-eye">✦ Sadə Proses</div>
+    <h2 class="sec-title">3 addımda uçuşunuzu tapın</h2>
+    <p class="sec-sub">Qeydiyyat yoxdur. Kart məlumatı yoxdur. Sadəcə marşrut, tarix və bir WhatsApp mesajı.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-ico">🔍</div>
+        <div class="step-title">Marşrut seçin</div>
+        <div class="step-body">Gediş-gəliş hava limanı kodlarını daxil edin (məs. GYD → IST). Kodları bilmirsinizsə — IATA siyahısından seçin.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-ico">📅</div>
+        <div class="step-title">Tarixi müəyyənləşdirin</div>
+        <div class="step-body">Gediş tarixini seçin. Gedib-gəlmə istikaməti üçün qayıdış tarixini də əlavə edin. Ətraflı uçuş məlumatları göstəriləcək.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-ico">💬</div>
+        <div class="step-title">WhatsApp-da qiymət alın</div>
+        <div class="step-body">Uçuşları nəzərdən keçirin, sonra "Qiymət al" düyməsinə basın. Marşrut məlumatları avtomatik göndərilir — siz sadəcə cavab gözləyin.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── STATS ── -->
+<div class="section-sm">
+  <div class="wrap">
+    <div class="stats-band">
+      <div class="stat">
+        <div class="stat-val">500<span>+</span></div>
+        <div class="stat-lbl">Məmnun müştəri</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val">15<span>+</span></div>
+        <div class="stat-lbl">İl təcrübə</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val">50<span>+</span></div>
+        <div class="stat-lbl">Ölkə istiqaməti</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val">24<span>/7</span></div>
+        <div class="stat-lbl">WhatsApp dəstəyi</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── FEATURES ── -->
+<div class="section">
+  <div class="wrap">
+    <div class="sec-eye">✦ Üstünlüklərimiz</div>
+    <h2 class="sec-title">Niyə bizi seçirlər?</h2>
+    <p class="sec-sub">Sadə interfeys, şəffaf proses, sürətli cavab — travel agentliyindən gözlənilən hər şey.</p>
+    <div class="feat-grid">
+      <div class="feat">
+        <div class="feat-ico ico-b">✈</div>
+        <div>
+          <div class="feat-title">Real Amadeus məlumatı</div>
+          <div class="feat-body">Uçuş axtarışı global Amadeus GDS sistemi üzərindən həyata keçirilir. Mövcud uçuşlar, real müddətlər, dayanacaq sayı.</div>
+        </div>
+      </div>
+      <div class="feat">
+        <div class="feat-ico ico-g">🕐</div>
+        <div>
+          <div class="feat-title">Yerli vaxt göstərilir</div>
+          <div class="feat-body">Bütün uçuş vaxtları hava limanının yerli saatı ilə göstərilir. "+1 gün" bildirişi ilə gündəlikdəki dəyişiklikləri görürsünüz.</div>
+        </div>
+      </div>
+      <div class="feat">
+        <div class="feat-ico ico-y">💬</div>
+        <div>
+          <div class="feat-title">Bir kliklə qiymət</div>
+          <div class="feat-body">Saytda qiymət göstərilmir — bu şəffaflıq üçündür. "Qiymət al" düyməsi marşrut və tarix məlumatını avtomatik WhatsApp-a göndərir.</div>
+        </div>
+      </div>
+      <div class="feat">
+        <div class="feat-ico ico-r">🔒</div>
+        <div>
+          <div class="feat-title">Qeydiyyat tələb olunmur</div>
+          <div class="feat-body">Hesab açmaq, kart daxil etmək yoxdur. Axtarış sərbəstdir, tam anonim. Yalnız qiymət istəyəndə əlaqə qurursunuz.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── POPULAR DESTINATIONS ── -->
+<div class="section" id="destinations">
+  <div class="wrap">
+    <div class="sec-eye">✦ Populyar Marşrutlar</div>
+    <h2 class="sec-title">Ən çox seçilən istiqamətlər</h2>
+    <p class="sec-sub">Aşağıdakı marşrutlardan birini seçin — uçuş axtarışı avtomatik doldurulsun.</p>
+    <div class="dest-grid" id="dest-grid">
+      {% for dest in destinations %}
+      <div class="dc">
+        <div class="dc-img">
+          {% if dest.image %}<img src="{{ dest.image.url }}" alt="{{ dest.destination_city }}"/>{% endif %}
+          <div class="dc-ov"></div>
+          <div class="dc-badge">{{ dest.origin_code|upper }} → {{ dest.destination_code|upper }}</div>
+        </div>
+        <div class="dc-body">
+          <div class="dc-from">{{ dest.origin_city }} → {{ dest.destination_city }}</div>
+          <div class="dc-city">{{ dest.destination_city }}</div>
+          <div class="dc-row">
+            <div class="dc-price">
+              <span class="dc-pf">başlayaraq&nbsp;</span>
+              <span class="dc-pv">${{ dest.price }}</span>
+              <span class="dc-pc">&nbsp;{{ dest.currency }}</span>
+            </div>
+            <a class="dc-btn" href="{% url 'landing' %}?origin={{ dest.origin_code|upper }}&destination={{ dest.destination_code|upper }}">Axtar</a>
+          </div>
+        </div>
+      </div>
+      {% empty %}{% endfor %}
+    </div>
+    <div style="text-align:center;margin-top:28px;">
+      <a class="btn-primary" style="display:inline-flex" href="{% url 'landing' %}">Bütün marşrutlara bax →</a>
+    </div>
+  </div>
+</div>
+
+<div style="padding:0 20px;max-width:880px;margin:0 auto;"><hr class="divider"/></div>
+
+<!-- ── CONTACT ── -->
+<div class="section" id="contact">
+  <div class="wrap">
+    <div class="sec-eye">✦ Bizimlə Əlaqə</div>
+    <h2 class="sec-title">Ofis məlumatları</h2>
+    <p class="sec-sub">Sualınız var? Ofisimizə gəlin və ya WhatsApp-da yazın.</p>
+    <div class="contact-grid">
+      <div class="cc">
+        <div class="cc-title"><div class="cc-ico">📋</div>Əlaqə məlumatları</div>
+        <div class="ir"><span class="ir-l">WhatsApp</span><span class="ir-v">{% if settings and settings.whatsapp_number %}{{ settings.whatsapp_number }}{% else %}Göstərilməyib{% endif %}</span></div>
+        <div class="ir"><span class="ir-l">Telefon</span><span class="ir-v">{% if settings and settings.office_phone %}{{ settings.office_phone }}{% else %}Göstərilməyib{% endif %}</span></div>
+        <div class="ir"><span class="ir-l">E-poçt</span><span class="ir-v">{% if settings and settings.office_email %}{{ settings.office_email }}{% else %}Göstərilməyib{% endif %}</span></div>
+        <div class="ir"><span class="ir-l">İş saatları</span><span class="ir-v">{% if settings and settings.office_hours %}{{ settings.office_hours }}{% else %}Göstərilməyib{% endif %}</span></div>
+        <div class="ir"><span class="ir-l">Ünvan</span><span class="ir-v">{% if settings and settings.office_address %}{{ settings.office_address }}{% else %}Göstərilməyib{% endif %}</span></div>
+        <a class="wa-btn"
+           href="https://wa.me/{% if settings %}{{ settings.whatsapp_number }}{% else %}994125550000{% endif %}?text=Salam%2C%20uçuş%20barədə%20məlumat%20almaq%20istəyirəm."
+           target="_blank" rel="noopener">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          WhatsApp-da yazın
+        </a>
+      </div>
+      <div class="map-cc">
+        {% if settings and settings.office_map_url %}
+        <iframe
+          title="Ofis xəritəsi"
+          src="{{ settings.office_map_url }}"
+          width="100%" height="320"
+          style="border:0;display:block;width:100%;height:100%;min-height:320px;"
+          allowfullscreen
+          referrerpolicy="no-referrer-when-downgrade"
+          loading="lazy">
+        </iframe>
+        {% else %}
+        <div class="map-empty">
+          <div class="map-empty-ico">📍</div>
+          <p>Xəritə admin panelindən əlavə edilə bilər.<br>
+          <small>Admin → Site Settings → office_map_url<br>
+          Google Maps-də yeri tapın → <b>Paylaş → Linki kopyala</b> → bura yapışdırın.</small></p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── FINAL CTA ── -->
+<div class="wrap">
+  <div class="cta-band">
+    <div class="cta-band-inner">
+      <div class="cta-logo-wrap">
+        <img class="cta-logo" src="{% static 'core/logo.png' %}" alt="Butterfly Travel"/>
+      </div>
+      <h2 class="cta-title">Hara getmək istəyirsiniz?<br><em>Bizimlə tapın.</em></h2>
+      <p class="cta-sub">Sürətli axtarış, sadə interfeys, WhatsApp-da dərhal qiymət. Qeydiyyat tələb olunmur.</p>
+      <div class="cta-btns">
+        <a class="btn-primary" href="{% url 'landing' %}">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          Uçuş axtarışına keç
+        </a>
+        <a class="btn-ghost"
+           href="https://wa.me/{% if settings %}{{ settings.whatsapp_number }}{% else %}994125550000{% endif %}?text=Salam%2C%20uçuş%20barədə%20məlumat%20almaq%20istəyirəm."
+           target="_blank" rel="noopener">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          WhatsApp
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer class="footer">
+  <div class="footer-in">
+    <div class="footer-top">
+      <div class="footer-links">
+        <a href="#how">Necə işləyir</a>
+        <a href="#destinations">Marşrutlar</a>
+        <a href="#contact">Əlaqə</a>
+        <a href="{% url 'landing' %}">Uçuş axtar</a>
+      </div>
+    </div>
+    <div class="footer-bot">
+      <div class="footer-copy">© 2025 Butterfly Travel. Bütün hüquqlar qorunur. Bakı, Azərbaycan.</div>
+      <div class="footer-dots">
+        <div class="fdot" style="background:var(--blue)"></div>
+        <div class="fdot" style="background:var(--yellow)"></div>
+        <div class="fdot" style="background:var(--red)"></div>
+        <div class="fdot" style="background:var(--green)"></div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* Dest grid JS fallback — if Django sends empty list */
+(function(){
+  const g = document.getElementById("dest-grid");
+  if(g && g.children.length === 0){
+    [["GYD","IST","İstanbul","280"],["GYD","DXB","Dubai","420"],
+     ["GYD","CDG","Paris","890"],["GYD","LHR","London","1100"],
+     ["GYD","FCO","Roma","760"],["GYD","MUC","Münhen","650"]].forEach(d=>{
+      const url = `/flights/?origin=${d[0]}&destination=${d[1]}`;
+      g.innerHTML += `
+        <div class="dc">
+          <div class="dc-img"><div class="dc-ov"></div><div class="dc-badge">${d[0]} → ${d[1]}</div></div>
+          <div class="dc-body">
+            <div class="dc-from">Bakı → ${d[2]}</div>
+            <div class="dc-city">${d[2]}</div>
+            <div class="dc-row">
+              <div class="dc-price"><span class="dc-pf">başlayaraq&nbsp;</span><span class="dc-pv">$${d[3]}</span><span class="dc-pc">&nbsp;USD</span></div>
+              <a class="dc-btn" href="/flights/">Axtar</a>
+            </div>
+          </div>
+        </div>`;
+    });
+  }
+})();
+</script>
+</body>
+</html>
