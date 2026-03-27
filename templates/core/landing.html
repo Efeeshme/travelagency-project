@@ -356,7 +356,7 @@
       {% for dest in destinations %}
       <div class="dc" onclick="prefill('{{ dest.origin_code|upper }}','{{ dest.destination_code|upper }}')">
         <div class="dc-img">
-          {% if dest.image %}<img src="{{ dest.image.url }}" alt="{{ dest.destination_city }}"/>{% endif %}
+          {% if dest.image_url %}<img src="{{ dest.image_url }}" alt="{{ dest.destination_city }}"/>{% elif dest.image %}<img src="{{ dest.image.url }}" alt="{{ dest.destination_city }}"/>{% endif %}
           <div class="dc-ov"></div>
           <div class="dc-badge">{{ dest.origin_code|upper }} → {{ dest.destination_code|upper }}</div>
         </div>
