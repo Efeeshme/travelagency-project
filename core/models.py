@@ -110,6 +110,7 @@ class PopularDestination(models.Model):
     currency = models.CharField(max_length=3, default="USD")
 
     image = models.ImageField(upload_to="destinations/", blank=True)
+    image_url = models.URLField(max_length=500, blank=True)
     description = models.TextField(blank=True)
 
     is_active = models.BooleanField(default=True)
