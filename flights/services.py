@@ -1,3 +1,4 @@
+
 # flights/services.py
 from __future__ import annotations
 
@@ -70,7 +71,7 @@ class AmadeusService:
                 "client_id": self.client_id,
                 "client_secret": self.client_secret,
             },
-            timeout=12,
+            timeout=20,
         )
         r.raise_for_status()
         payload = r.json()
@@ -108,7 +109,7 @@ class AmadeusService:
             self.SEARCH_URL[self.env],
             headers={"Authorization": f"Bearer {token}"},
             params=params,
-            timeout=18,
+            timeout=30,
         )
         r.raise_for_status()
         return r.json()
