@@ -164,6 +164,25 @@
     .sec-eye { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .14em; color: var(--blue-dk); margin-bottom: 4px; }
     .sec-title { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--ink); }
 
+
+    /* ── DEST MODAL ── */
+    .dest-modal-back { position: fixed; inset: 0; z-index: 500; background: rgba(8,18,32,.55); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; padding: 16px; }
+    .dest-modal-back.open { display: flex; }
+    .dest-modal { background: var(--card); border-radius: var(--r-lg); max-width: 480px; width: 100%; box-shadow: 0 28px 80px rgba(0,0,0,.25); overflow: hidden; }
+    .dest-modal-img { height: 200px; overflow: hidden; position: relative; }
+    .dest-modal-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .dest-modal-img-placeholder { width: 100%; height: 100%; background: linear-gradient(135deg,#0A1E35,#0D3358); }
+    .dest-modal-body { padding: 22px 24px 24px; }
+    .dest-modal-badge { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--blue-dk); margin-bottom: 4px; }
+    .dest-modal-title { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--ink); margin-bottom: 6px; }
+    .dest-modal-price { font-size: 13px; color: var(--muted); margin-bottom: 14px; }
+    .dest-modal-price b { color: var(--ink); font-size: 18px; }
+    .dest-modal-desc { font-size: 13px; color: var(--ink2); line-height: 1.7; white-space: pre-line; margin-bottom: 20px; max-height: 220px; overflow-y: auto; }
+    .dest-modal-actions { display: flex; gap: 10px; }
+    .dest-modal-close { padding: 10px 18px; background: var(--bg); color: var(--muted); border: 1.5px solid var(--line); border-radius: var(--r); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: background .2s; }
+    .dest-modal-close:hover { background: var(--line); }
+    .dest-modal-search { flex: 1; padding: 10px 18px; background: var(--ink); color: #fff; border: none; border-radius: var(--r); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: background .2s; }
+    .dest-modal-search:hover { background: var(--ink2); }
     /* ── DEST GRID ── */
     .dest-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 13px; }
     .dc { background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-lg); overflow: hidden; cursor: pointer; transition: transform .2s, box-shadow .2s, border-color .2s; display: flex; flex-direction: column; }
@@ -354,9 +373,9 @@
     </div>
     <div class="dest-grid" id="dest-grid">
       {% for dest in destinations %}
-      <div class="dc" onclick="prefill('{{ dest.origin_code|upper }}','{{ dest.destination_code|upper }}')">
+      <div class="dc" onclick="openDestModal('{{ dest.origin_code|upper }}','{{ dest.destination_code|upper }}','{{ dest.destination_city }}','{{ dest.origin_city }}','{{ dest.price }}','{{ dest.currency }}',this)" style="cursor:pointer">
         <div class="dc-img">
-          {% if dest.image_url %}<img src="{{ dest.image_url }}" alt="{{ dest.destination_city }}"/>{% elif dest.image %}<img src="{{ dest.image.url }}" alt="{{ dest.destination_city }}"/>{% endif %}
+          <span data-dest-desc="{{ dest.description }}" style="display:none"></span>{% if dest.image_url %}<img src="{{ dest.image_url }}" alt="{{ dest.destination_city }}"/>{% elif dest.image %}<img src="{{ dest.image.url }}" alt="{{ dest.destination_city }}"/>{% endif %}
           <div class="dc-ov"></div>
           <div class="dc-badge">{{ dest.origin_code|upper }} → {{ dest.destination_code|upper }}</div>
         </div>
@@ -435,6 +454,22 @@
   </div>
 </footer>
 
+
+<div class="dest-modal-back" id="destModal">
+  <div class="dest-modal">
+    <div class="dest-modal-img" id="destModalImg"></div>
+    <div class="dest-modal-body">
+      <div class="dest-modal-badge" id="destModalBadge"></div>
+      <div class="dest-modal-title" id="destModalTitle"></div>
+      <div class="dest-modal-price" id="destModalPrice"></div>
+      <div class="dest-modal-desc" id="destModalDesc"></div>
+      <div class="dest-modal-actions">
+        <button class="dest-modal-close" onclick="closeDestModal()">Bağla</button>
+        <button class="dest-modal-search" id="destModalSearch">✈ Uçuş axtar</button>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="mback" id="iataModal">
   <div class="modal" role="dialog" aria-modal="true">
     <div class="mh"><span class="mh-t">IATA Hava limanı kodları</span><button class="mh-x" id="closeIata">Bağla</button></div>
@@ -605,6 +640,29 @@ document.addEventListener("DOMContentLoaded",()=>{
     const s=e.target.value.toLowerCase();
     renderIata(s?IATA.filter(x=>`${x.code} ${x.city} ${x.airport} ${x.country}`.toLowerCase().includes(s)):IATA);
   });
+});
+
+function openDestModal(origin, dest, city, originCity, price, currency, el) {
+  const img = el.querySelector('.dc-img img');
+  document.getElementById('destModalImg').innerHTML = img 
+    ? '<img src="' + img.src + '" alt="' + city + '"/>' 
+    : '<div class="dest-modal-img-placeholder"></div>';
+  document.getElementById('destModalBadge').textContent = originCity + ' → ' + city;
+  document.getElementById('destModalTitle').textContent = city;
+  document.getElementById('destModalPrice').innerHTML = 'başlayaraq <b>' + price + ' ' + currency + '</b>';
+  const descEl = el.querySelector('[data-dest-desc]');
+  document.getElementById('destModalDesc').textContent = descEl ? descEl.dataset.destDesc : '';
+  document.getElementById('destModalSearch').onclick = function() {
+    closeDestModal();
+    prefill(origin, dest);
+  };
+  document.getElementById('destModal').classList.add('open');
+}
+function closeDestModal() {
+  document.getElementById('destModal').classList.remove('open');
+}
+document.addEventListener('click', function(e) {
+  if (e.target === document.getElementById('destModal')) closeDestModal();
 });
 </script>
 </body>

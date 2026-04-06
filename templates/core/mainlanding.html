@@ -490,9 +490,9 @@
     <p class="sec-sub">Aşağıdakı marşrutlardan birini seçin — uçuş axtarışı avtomatik doldurulsun.</p>
     <div class="dest-grid" id="dest-grid">
       {% for dest in destinations %}
-      <div class="dc">
+      <div class="dc" onclick="openDestModal('{{ dest.origin_code|upper }}','{{ dest.destination_code|upper }}','{{ dest.destination_city }}','{{ dest.origin_city }}','{{ dest.price }}','{{ dest.currency }}',this)" style="cursor:pointer">
         <div class="dc-img">
-          {% if dest.image_url %}<img src="{{ dest.image_url }}" alt="{{ dest.destination_city }}"/>{% elif dest.image %}<img src="{{ dest.image.url }}" alt="{{ dest.destination_city }}"/>{% endif %}
+          <span data-dest-desc="{{ dest.description }}" style="display:none"></span>{% if dest.image_url %}<img src="{{ dest.image_url }}" alt="{{ dest.destination_city }}"/>{% elif dest.image %}<img src="{{ dest.image.url }}" alt="{{ dest.destination_city }}"/>{% endif %}
           <div class="dc-ov"></div>
           <div class="dc-badge">{{ dest.origin_code|upper }} → {{ dest.destination_code|upper }}</div>
         </div>
@@ -636,6 +636,46 @@
     });
   }
 })();
+
+function openDestModal(origin, dest, city, originCity, price, currency, el) {
+  const img = el.querySelector('.dc-img img');
+  const desc = el.closest('[data-desc]') ? el.closest('[data-desc]').dataset.desc : '';
+  document.getElementById('destModalImg').innerHTML = img 
+    ? '<img src="' + img.src + '" alt="' + city + '"/>' 
+    : '<div class="dest-modal-img-placeholder"></div>';
+  document.getElementById('destModalBadge').textContent = originCity + ' → ' + city;
+  document.getElementById('destModalTitle').textContent = city;
+  document.getElementById('destModalPrice').innerHTML = 'başlayaraq <b>' + price + ' ' + currency + '</b>';
+  const descEl = el.querySelector('[data-dest-desc]');
+  document.getElementById('destModalDesc').textContent = descEl ? descEl.dataset.destDesc : '';
+  document.getElementById('destModalSearch').onclick = function() {
+    closeDestModal();
+    window.location.href = '/search/?origin=' + origin + '&destination=' + dest;
+  };
+  document.getElementById('destModal').classList.add('open');
+}
+function closeDestModal() {
+  document.getElementById('destModal').classList.remove('open');
+}
+document.addEventListener('click', function(e) {
+  if (e.target === document.getElementById('destModal')) closeDestModal();
+});
 </script>
+
+<div class="dest-modal-back" id="destModal">
+  <div class="dest-modal">
+    <div class="dest-modal-img" id="destModalImg"></div>
+    <div class="dest-modal-body">
+      <div class="dest-modal-badge" id="destModalBadge"></div>
+      <div class="dest-modal-title" id="destModalTitle"></div>
+      <div class="dest-modal-price" id="destModalPrice"></div>
+      <div class="dest-modal-desc" id="destModalDesc"></div>
+      <div class="dest-modal-actions">
+        <button class="dest-modal-close" onclick="closeDestModal()">Bağla</button>
+        <button class="dest-modal-search" id="destModalSearch">✈ Uçuş axtar</button>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
