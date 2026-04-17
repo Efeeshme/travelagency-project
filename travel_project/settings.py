@@ -155,3 +155,10 @@ LOGGING = {
     },
 }
 USE_X_FORWARDED_HOST = True
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "cache_table",
+    }
+}
