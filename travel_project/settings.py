@@ -162,3 +162,4 @@ CACHES = {
         "LOCATION": "cache_table",
     }
 }
+RATELIMIT_IP_META_KEY = 'HTTP_X_FORWARDED_FOR'
