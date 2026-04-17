@@ -26,7 +26,7 @@ def _whatsapp_url(origin: str, destination: str, departure_date: str, return_dat
     msg += f"\n👥 {adults} passenger(s)\n\nXaiş eliyirem en yaxşı qiymeti verin."
     return f"https://wa.me/{number}?text={quote(msg)}"
 
-@ratelimit(key='ip', rate='20/h', method='GET', block=True)
+@ratelimit(key='header:x-forwarded-for', rate='20/h', method='GET', block=True)
 def search_flights(request):
     if request.method != "GET":
         return JsonResponse({"mode": "error", "error": "GET only"}, status=405)
